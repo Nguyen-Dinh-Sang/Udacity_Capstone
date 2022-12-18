@@ -74,4 +74,30 @@ export class TodosAccess {
 
         return data;
     }
+
+    async updateAttachmentToDo(todoId: string, userId: string, attachmentUrl: string) {
+        await this.documentClient.update({
+            TableName: this.todoListTable,
+            Key: {
+                userId: userId,
+                todoId: todoId
+            },
+            UpdateExpression: "set attachmentUrl = :attachmentUrl",
+            ExpressionAttributeValues: {
+                ":attachmentUrl": attachmentUrl
+            },
+        }).promise();
+    }
+
+    async getTodo(todoId: string, userId: string): Promise<TodoItem> {
+        const query = await this.documentClient.query({
+            TableName: this.todoListTable,
+            KeyConditionExpression: 'userId = :userId AND todoId = :todoId',
+            ExpressionAttributeValues: {
+                ':userId': userId,
+                ':todoId': todoId
+            }
+        }).promise();
+        return query.Items[0] as TodoItem;
+    }
 }

@@ -29,9 +29,17 @@ export async function createAttachmentPresignedUrl(todoId: string, userId: strin
 }
 
 export async function updateTodo(todoId: string, userId: string, model: UpdateTodoRequest) {
-    await new TodosAccess().updateTodo(todoId, userId, model)
+    await new TodosAccess().updateTodo(todoId, userId, model);
 }
 
 export async function deleteTodo(todoId: string, userId: string) {
-    await new TodosAccess().deleteTodo(todoId, userId)
+    await new TodosAccess().deleteTodo(todoId, userId);
+}
+
+export async function deleteAttachment(todoId: string, userId: string) {
+    const toDo = await new TodosAccess().getTodo(todoId, userId);
+    if (toDo.attachmentUrl) {
+        await attachmentUtils.deleteAttachmentFile(toDo.attachmentUrl);
+        await new TodosAccess().updateAttachmentToDo(todoId, userId, '');
+    } 
 }
