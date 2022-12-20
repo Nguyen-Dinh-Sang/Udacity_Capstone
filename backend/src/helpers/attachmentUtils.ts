@@ -17,10 +17,10 @@ export class AttachmentUtils {
         })
     }
 
-    async deleteAttachmentFile(attachmentUrl: string) {
+    async deleteAttachmentFile(todoId: string) {
         await this.s3.deleteObject({
             Bucket: process.env.ATTACHMENT_S3_BUCKET,
-            Key: attachmentUrl
+            Key: todoId
         }).promise();
     }
 }
