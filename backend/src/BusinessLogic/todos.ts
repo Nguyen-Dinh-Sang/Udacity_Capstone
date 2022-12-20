@@ -33,13 +33,17 @@ export async function updateTodo(todoId: string, userId: string, model: UpdateTo
 }
 
 export async function deleteTodo(todoId: string, userId: string) {
+    const toDo = await new TodosAccess().getTodo(todoId, userId);
+    if(toDo.attachmentUrl) {
+        await attachmentUtils.deleteAttachmentFile(todoId);
+    }
     await new TodosAccess().deleteTodo(todoId, userId);
 }
 
 export async function deleteAttachment(todoId: string, userId: string) {
     const toDo = await new TodosAccess().getTodo(todoId, userId);
     if (toDo.attachmentUrl) {
-        await attachmentUtils.deleteAttachmentFile(toDo.attachmentUrl);
+        await attachmentUtils.deleteAttachmentFile(todoId);
         await new TodosAccess().updateAttachmentToDo(todoId, userId, '');
     } 
 }

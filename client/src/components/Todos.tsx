@@ -104,7 +104,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   render() {
     return (
       <div>
-        <Header as="h1">TODOs</Header>
+        <Header as="h1">Sang's TODOs</Header>
 
         {this.renderCreateTodoInput()}
 
@@ -161,7 +161,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       <Grid padded>
         {this.state.todos.map((todo, pos) => {
           return (
-            <Grid.Row key={todo.todoId}>
+            <Grid.Row className='boder-todo' key={todo.todoId}>
               <Grid.Column width={1} verticalAlign="middle">
                 <Checkbox
                   onChange={() => this.onTodoCheck(pos)}
@@ -169,7 +169,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 />
               </Grid.Column>
               <Grid.Column width={10} verticalAlign="middle">
-                {todo.name}
+                <h3>{todo.name}</h3>
               </Grid.Column>
               <Grid.Column width={3} floated="right">
                 {todo.dueDate}
@@ -177,7 +177,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               <Grid.Column width={1} floated="right">
                 <Button
                   icon
-                  color="blue"
+                  color="purple"
                   onClick={() => this.onEditButtonClick(todo.todoId)}
                 >
                   <Icon name="pencil" />
@@ -195,6 +195,24 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               {todo.attachmentUrl && (
                 <Image src={todo.attachmentUrl} size="small" wrapped />
               )}
+              <Grid.Column width={1}>
+                <Button
+                  icon
+                  color="purple"
+                  onClick={() => this.onEditButtonClick(todo.todoId)}
+                >
+                  <Icon name="download" />
+                </Button>
+              </Grid.Column>
+              <Grid.Column width={1}>
+                <Button
+                  icon
+                  color="red"
+                  onClick={() => this.onTodoDelete(todo.todoId)}
+                >
+                  <Icon name="trash" />
+                </Button>
+              </Grid.Column>
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>

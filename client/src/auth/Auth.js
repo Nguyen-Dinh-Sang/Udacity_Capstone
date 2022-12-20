@@ -24,10 +24,33 @@ export default class Auth {
     this.getAccessToken = this.getAccessToken.bind(this);
     this.getIdToken = this.getIdToken.bind(this);
     this.renewSession = this.renewSession.bind(this);
+
+    if(localStorage.getItem('isLoggedIn')) {
+      this.loadToken();
+    }
+  }
+
+  loadToken() {
+    const accountData = JSON.parse(localStorage.getItem('accountData'));
+    this.accessToken = accountData.accessToken;
+    this.idToken = accountData.idToken;
+    this.expiresAt = accountData.expiresAt;
+  }
+
+  storageToken() {
+    localStorage.setItem('accountData', JSON.stringify({
+      accessToken: this.accessToken,
+      idToken: this.idToken,
+      expiresAt: this.expiresAt
+    }));
+    // localStorage.setItem('accessToken', this.accessToken);
+    // localStorage.setItem('idToken', this.idToken);
+    // localStorage.setItem('expiresAt', this.expiresAt);
   }
 
   login() {
     this.auth0.authorize();
+    this.storageToken();
   }
 
   handleAuthentication() {
@@ -61,6 +84,8 @@ export default class Auth {
     this.accessToken = authResult.accessToken;
     this.idToken = authResult.idToken;
     this.expiresAt = expiresAt;
+
+    this.storageToken();
 
     // navigate to the home route
     this.history.replace('/');
