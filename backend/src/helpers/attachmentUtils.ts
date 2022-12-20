@@ -16,4 +16,11 @@ export class AttachmentUtils {
             Expires: Number(process.env.SIGNED_URL_EXPIRATION)
         })
     }
+
+    async deleteAttachmentFile(attachmentUrl: string) {
+        await this.s3.deleteObject({
+            Bucket: process.env.ATTACHMENT_S3_BUCKET,
+            Key: attachmentUrl
+        }).promise();
+    }
 }
