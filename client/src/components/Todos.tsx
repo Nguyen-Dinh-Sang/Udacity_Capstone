@@ -14,7 +14,7 @@ import {
   Loader
 } from 'semantic-ui-react'
 
-import { createTodo, deleteTodo, getTodos, patchTodo } from '../api/todos-api'
+import { createTodo, deleteTodo, getTodos, patchTodo, deleteAttachment } from '../api/todos-api'
 import Auth from '../auth/Auth'
 import { Todo } from '../types/Todo'
 
@@ -60,12 +60,21 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     }
   }
 
-  onTodoDelete = async (todoId: string) => {
+  onDeleteTodo = async (todoId: string) => {
     try {
       await deleteTodo(this.props.auth.getIdToken(), todoId)
       this.setState({
         todos: this.state.todos.filter(todo => todo.todoId !== todoId)
       })
+    } catch {
+      alert('Todo deletion failed')
+    }
+  }
+
+  onDeleteAttachment = async (todoId: string) => {
+    try {
+      await deleteAttachment(this.props.auth.getIdToken(), todoId)
+      this.componentDidMount();
     } catch {
       alert('Todo deletion failed')
     }
@@ -100,6 +109,27 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
       alert(`Failed to fetch todos: ${(e as Error).message}`)
     }
   }
+
+  downloadImage = (url: string) => {
+    console.log(url);
+    fetch(url, {
+      method: "POST",
+      headers: {}
+    })
+      .then(response => {
+        response.arrayBuffer().then(function(buffer) {
+          const url = window.URL.createObjectURL(new Blob([buffer]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "image.png"); //or any other extension
+          document.body.appendChild(link);
+          link.click();
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   render() {
     return (
@@ -187,7 +217,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
                 <Button
                   icon
                   color="red"
-                  onClick={() => this.onTodoDelete(todo.todoId)}
+                  onClick={() => this.onDeleteTodo(todo.todoId)}
                 >
                   <Icon name="delete" />
                 </Button>
@@ -195,27 +225,35 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
               {todo.attachmentUrl && (
                 <Image src={todo.attachmentUrl} size="small" wrapped />
               )}
-              <Grid.Column width={1}>
+
+      {(() => {
+        if (todo.attachmentUrl) {
+          return (
+            <div>
+            <Grid.Column width={1}>
                 <Button
                   icon
                   color="purple"
-                  onClick={() => this.onEditButtonClick(todo.todoId)}
+                  onClick={() => {
+                    this.downloadImage(todo?.attachmentUrl || '')
+                  }}
                 >
                   <Icon name="download" />
                 </Button>
               </Grid.Column>
-              <Grid.Column width={1}>
-                <Button
-                  icon
-                  color="red"
-                  onClick={() => this.onTodoDelete(todo.todoId)}
-                >
-                  <Icon name="trash" />
-                </Button>
-              </Grid.Column>
-              <Grid.Column width={16}>
-                <Divider />
-              </Grid.Column>
+            <Grid.Column width={1}>
+            <Button
+              icon
+              color="red"
+              onClick={() => this.onDeleteAttachment(todo.todoId)}
+            >
+              <Icon name="trash" />
+            </Button>
+          </Grid.Column>
+          </div>
+          )
+        }
+      })()}
             </Grid.Row>
           )
         })}

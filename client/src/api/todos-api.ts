@@ -43,6 +43,18 @@ export async function patchTodo(
   })
 }
 
+export async function deleteAttachment(
+  idToken: string,
+  todoId: string
+): Promise<void> {
+  await Axios.delete(`${apiEndpoint}/attachment/${todoId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    }
+  })
+}
+
 export async function deleteTodo(
   idToken: string,
   todoId: string
